@@ -20,16 +20,11 @@ class Logger {
         }
     }
 
-    private static final boolean DEBUG_MODE = BuildConfig.DEBUG;
-
-    private static final boolean RELEASE_MODE = !BuildConfig.DEBUG;
-
     //The tag to send do the Android Logger.  You can filter by this string.
     private static final String DEFAULT_LOG_TAG = BuildConfig.APPLICATION_ID;
 
     //Don't log any messages less than this level.
-    private final LogLevel mLogLevelDebug;
-    private final LogLevel mLogLevelRelease;
+    private LogLevel mLogLevel;
 
     //Include the function name as part of the log tag.  Decreases performance.
     private boolean mTagIncludeFunctionName = false;
@@ -47,13 +42,9 @@ class Logger {
     }
 
     public Logger(LogLevel logLevel) {
-        this(logLevel, logLevel);
+        mLogLevel = logLevel;
     }
 
-    public Logger(LogLevel releaseLogLevel, LogLevel debugLogLevel) {
-        mLogLevelRelease = releaseLogLevel;
-        mLogLevelDebug = debugLogLevel;
-    }
 
     /*
     Knowing what function a logging statement originates from is valuable both for debugging
@@ -61,12 +52,12 @@ class Logger {
      */
     public Logger setTagIncludeFunctionName(boolean includeFunctionName) {
         //Don't log function names in release mode, it's slow.
-        mTagIncludeFunctionName = includeFunctionName && DEBUG_MODE;
+        mTagIncludeFunctionName = includeFunctionName && CLog.DEBUG_MODE;
         return this;
     }
 
     public Logger setTagIncludeLineNumber(boolean includeLineNumber) {
-        mTagIncludeLineNumber = includeLineNumber && DEBUG_MODE;
+        mTagIncludeLineNumber = includeLineNumber && CLog.DEBUG_MODE;
         return this;
     }
 
@@ -85,7 +76,7 @@ class Logger {
 
     private String getLogTag(final boolean includeFunction, final boolean includeLineNumber) {
 
-        if (DEBUG_MODE) {
+        if (CLog.DEBUG_MODE) {
 
             final StackTraceElement functionCall;
 
@@ -123,24 +114,29 @@ class Logger {
 
     LogLevel calculateActualLogLevel(final LogLevel logLevel) {
         //Sometimes we want to bring focus to a certain logger.
-        if (mImportant && DEBUG_MODE && logLevel.ordinal() < LogLevel.INFO.ordinal()) return LogLevel.INFO;
+        if (mImportant && CLog.DEBUG_MODE && logLevel.ordinal() < LogLevel.INFO.ordinal()) return LogLevel.INFO;
 
         return logLevel;
     }
 
     public void println(LogLevel logLevel, final String message) {
-        println(logLevel, message, logLevel.ordinal() > LogLevel.INFO.ordinal());
+        final boolean logInReleaseMode = logLevel.ordinal() >= LogLevel.INFO.ordinal();
+        println(logLevel, message, logInReleaseMode);
     }
 
     public void println(LogLevel logLevel, final String message, final boolean logInReleaseMode) {
 
+        if (CLog.DEFAULT_LOG_TAG == null) {
+            throw new RuntimeException("Must initialize logger library before use.");
+        }
+
         //Only some messages get logged in release mode.
-        if (RELEASE_MODE && !logInReleaseMode) return;
+        if (CLog.RELEASE_MODE && !logInReleaseMode) return;
 
         //Some log levels are completely ignored in release mode.
-        if (logLevel.ordinal() < LogLevel.INFO.ordinal() && RELEASE_MODE) return;
+        if (logLevel.ordinal() < LogLevel.INFO.ordinal() && CLog.RELEASE_MODE) return;
 
-        if (logLevel.ordinal() < mLogLevelDebug.ordinal()) return;
+        if (logLevel.ordinal() < mLogLevel.ordinal()) return;
 
         Log.println(calculateActualLogLevel(logLevel).mAssociatedAndroidLevel, getLogTag(mTagIncludeFunctionName, mTagIncludeLineNumber), message);
     }
@@ -173,6 +169,10 @@ class Logger {
     @SuppressWarnings("unused")
     public void wtf(String message) {
         println(LogLevel.ASSERT, message, true);
+    }
+
+    public void setLogLevel(LogLevel logLevel) {
+        mLogLevel = logLevel;
     }
 }
 

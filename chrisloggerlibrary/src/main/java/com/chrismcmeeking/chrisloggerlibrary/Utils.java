@@ -1,6 +1,5 @@
 package com.chrismcmeeking.chrisloggerlibrary;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,7 +8,7 @@ import java.util.List;
  */
 public class Utils {
 
-    private static List<Class<? extends Object >> CLASSES_IN_PACKAGE = Arrays.asList(Log.class, Logger.class, Utils.class);
+    private static List<Class<? extends Object >> CLASSES_IN_PACKAGE = Arrays.asList(CLog.class, Logger.class, Utils.class);
 
     private static boolean isClassInPackage(final Class <? extends Object > argClazz) {
 

@@ -7,7 +7,18 @@ import static com.chrismcmeeking.chrisloggerlibrary.Utils.*;
 /**
  * Created by chrismcmeeking on 3/8/16.
  */
-public class Log {
+public class CLog {
+
+    static String DEFAULT_LOG_TAG = null;
+
+    static boolean RELEASE_MODE = true;
+    static boolean DEBUG_MODE = false;
+
+    public static void initialize(final String defaultTag, final boolean debugMode) {
+        RELEASE_MODE = !debugMode;
+        DEBUG_MODE = debugMode;
+        DEFAULT_LOG_TAG = defaultTag;
+    }
 
     static HashMap<Class <? extends Object>, Logger> mLoggers = new HashMap<>();
 
@@ -15,6 +26,14 @@ public class Log {
 
     public static void v(final String message) {
         println(message, Logger.LogLevel.VERBOSE);
+    }
+
+    public static void d(final String message) {
+        println(message, Logger.LogLevel.DEBUG);
+    }
+
+    public static void i(final String message) {
+        println(message, Logger.LogLevel.INFO);
     }
 
     public static void w(final String message) {
@@ -25,9 +44,6 @@ public class Log {
         println(message, Logger.LogLevel.ERROR);
     }
 
-    public static void d(final String message) {
-        println(message, Logger.LogLevel.DEBUG);
-    }
 
     public static void wtf(final String message) {
         println(message, Logger.LogLevel.ASSERT);
