@@ -20,6 +20,10 @@ class Logger {
         }
     }
 
+    static boolean DEFAULT_INCLUDE_FUNCTION_NAME = true;
+
+    static boolean DEFAULT_INCLUDE_LINE_NUMBER = false;
+
     //The tag to send do the Android Logger.  You can filter by this string.
     private static final String DEFAULT_LOG_TAG = BuildConfig.APPLICATION_ID;
 
@@ -27,10 +31,10 @@ class Logger {
     private LogLevel mLogLevel;
 
     //Include the function name as part of the log tag.  Decreases performance.
-    private boolean mTagIncludeFunctionName = false;
+    private boolean mTagIncludeFunctionName = DEFAULT_INCLUDE_FUNCTION_NAME;
 
     //Include the line number as part of the log tag.  Decreases performance.
-    private boolean mTagIncludeLineNumber = false;
+    private boolean mTagIncludeLineNumber = DEFAULT_INCLUDE_LINE_NUMBER;
 
     //Escalate all verbose and debug outputs to info.  This should be the only way
     //a log gets output on the info channel.

@@ -65,4 +65,32 @@ public class CLog {
 
         return mLoggers.get(clazz);
     }
+
+    /**
+     * Sets the include funtion names tag for all active loggers.
+     * Also sets the static default value so any future constructed
+     * loggers will have the same value for this tag.
+     * @param value Set to true to include the function name in log tags
+     */
+    public static void setIncludeFunctionNames(final boolean value) {
+        for (Logger logger : mLoggers.values()) {
+            logger.setTagIncludeFunctionName(value);
+        }
+
+        Logger.DEFAULT_INCLUDE_FUNCTION_NAME = value;
+    }
+
+    /**
+     * Sets the include line number tag for all active loggers.
+     * Also sets the static default value so any future constructed
+     * loggers will have the same value for this tag.
+     * @param value Set to true to include line numbers in log tags.
+     */
+    public static void setIncludeLineNumber(final boolean value) {
+        for (Logger logger : mLoggers.values()) {
+            logger.setTagIncludeLineNumber(value);
+        }
+
+        Logger.DEFAULT_INCLUDE_LINE_NUMBER = value;
+    }
 }
