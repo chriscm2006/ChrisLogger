@@ -21,41 +21,41 @@ public class LogTests {
     @Test
     public void messagesRespondToReleaseMode() {
         if (BuildConfig.DEBUG) {
-            Log.v("Hi");
+            CLog.v("Hi");
             assertTopShadowLogMessage(Logger.LogLevel.VERBOSE, TAG, "Hi");
         } else {
             final int numMessages = ShadowLog.getLogs().size();
-            Log.v("");
-            Log.v("");
+            CLog.v("");
+            CLog.v("");
             assertEquals(numMessages, ShadowLog.getLogs().size());
         }
         //These log levels should only change tags based on release mode
-        Log.w("Aloha");
+        CLog.w("Aloha");
         assertTopShadowLogMessage(Logger.LogLevel.WARN, TAG, "Aloha");
 
-        Log.e("Umm...");
+        CLog.e("Umm...");
         assertTopShadowLogMessage(Logger.LogLevel.ERROR, TAG, "Umm...");
 
-        Log.wtf("Good Bye");
+        CLog.wtf("Good Bye");
         assertTopShadowLogMessage(Logger.LogLevel.ASSERT, TAG, "Good Bye");
     }
 
     @Test
     public void messagesEscalateToInfo() {
-        Log.getLogger(LogTests.class).setIsImportant(true);
+        CLog.getLogger(LogTests.class).setIsImportant(true);
 
-        Log.v("A message");
+        CLog.v("A message");
         assertTopShadowLogMessage(Logger.LogLevel.INFO, TAG, "A message");
 
-        Log.d("Another message");
+        CLog.d("Another message");
         assertTopShadowLogMessage(Logger.LogLevel.INFO, TAG, "Another message");
 
-        Log.getLogger(LogTests.class).setIsImportant(false);
+        CLog.getLogger(LogTests.class).setIsImportant(false);
 
-        Log.d("Another message");
+        CLog.d("Another message");
         assertTopShadowLogMessage(Logger.LogLevel.DEBUG, TAG, "Another message");
 
-        Log.v("A message");
+        CLog.v("A message");
         assertTopShadowLogMessage(Logger.LogLevel.VERBOSE, TAG, "A message");
     }
 }
