@@ -1,15 +1,12 @@
 package com.chrismcmeeking.chrisloggerlibrary;
 
-import android.util.Log;
-
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 
 import static com.chrismcmeeking.chrisloggerlibrary.LoggerTestUtils.*;
-import static org.junit.Assert.*;
 
 /**
  * To work on unit tests, switch the Test Artifact in the Build Variants view.
@@ -22,18 +19,17 @@ public class LoggerTests {
 
     final static String mTag = BuildConfig.DEBUG ? LoggerTests.class.getSimpleName() : BuildConfig.APPLICATION_ID;
 
+    @BeforeClass
+    public static void configureLogger() {
+        CLog.initialize("DefaultTag", true);
+        CLog.setIncludeFunctionNames(false);
+    }
+
     @Test
     public void messagesRespondToReleaseMode() {
 
-        if (BuildConfig.DEBUG) {
-            logger.v("Hi");
-            assertTopShadowLogMessage(Logger.LogLevel.VERBOSE, mTag, "Hi");
-        } else {
-            final int numMessages = ShadowLog.getLogs().size();
-            logger.d("");
-            logger.v("");
-            assertEquals(numMessages, ShadowLog.getLogs().size());
-        }
+        logger.v("Hi");
+        assertTopShadowLogMessage(Logger.LogLevel.VERBOSE, mTag, "Hi");
 
         //These log levels should only change tags based on release mode
         logger.w("Aloha");
@@ -63,7 +59,7 @@ public class LoggerTests {
         logger.e("another log");
 
         //The log tag may have to change a lot, but it's worth it to test this.
-        final String tagWithLine = tagWithFunction + "/63";
+        final String tagWithLine = tagWithFunction + "/59";
         assertTopShadowLogMessage(Logger.LogLevel.ERROR, tagWithLine, "another log");
     }
 

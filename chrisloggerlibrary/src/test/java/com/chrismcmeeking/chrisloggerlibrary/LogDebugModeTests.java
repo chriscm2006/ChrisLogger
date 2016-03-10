@@ -1,34 +1,41 @@
 package com.chrismcmeeking.chrisloggerlibrary;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 
 import static com.chrismcmeeking.chrisloggerlibrary.LoggerTestUtils.assertTopShadowLogMessage;
 import static org.junit.Assert.assertEquals;
 
 /**
  * Created by chrismcmeeking on 3/8/16.
+ *
+ * Tests that focus on the logger when it is running in debug mode.  This mode is very verbose
+ * and supplies a lot of information to the user.  Include class and function calls in log
+ * tags.
  */
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class)
-public class LogTests {
+public class LogDebugModeTests {
 
-    final static String TAG = BuildConfig.DEBUG ? LogTests.class.getSimpleName() : BuildConfig.APPLICATION_ID;
+    private static final boolean DEBUG_MODE = true;
+
+
+    @BeforeClass
+    public static void configureLogger() {
+        CLog.initialize("DefaultTag", DEBUG_MODE);
+        CLog.setIncludeFunctionNames(false);
+    }
+
+    final static String TAG = BuildConfig.DEBUG ? LogDebugModeTests.class.getSimpleName() : BuildConfig.APPLICATION_ID;
 
     @Test
     public void messagesRespondToReleaseMode() {
-        if (BuildConfig.DEBUG) {
-            CLog.v("Hi");
-            assertTopShadowLogMessage(Logger.LogLevel.VERBOSE, TAG, "Hi");
-        } else {
-            final int numMessages = ShadowLog.getLogs().size();
-            CLog.v("");
-            CLog.v("");
-            assertEquals(numMessages, ShadowLog.getLogs().size());
-        }
+        CLog.v("Hi");
+        assertTopShadowLogMessage(Logger.LogLevel.VERBOSE, TAG, "Hi");
+
         //These log levels should only change tags based on release mode
         CLog.w("Aloha");
         assertTopShadowLogMessage(Logger.LogLevel.WARN, TAG, "Aloha");
@@ -42,7 +49,7 @@ public class LogTests {
 
     @Test
     public void messagesEscalateToInfo() {
-        CLog.getLogger(LogTests.class).setIsImportant(true);
+        CLog.getLogger(LogDebugModeTests.class).setIsImportant(true);
 
         CLog.v("A message");
         assertTopShadowLogMessage(Logger.LogLevel.INFO, TAG, "A message");
@@ -50,7 +57,7 @@ public class LogTests {
         CLog.d("Another message");
         assertTopShadowLogMessage(Logger.LogLevel.INFO, TAG, "Another message");
 
-        CLog.getLogger(LogTests.class).setIsImportant(false);
+        CLog.getLogger(LogDebugModeTests.class).setIsImportant(false);
 
         CLog.d("Another message");
         assertTopShadowLogMessage(Logger.LogLevel.DEBUG, TAG, "Another message");
