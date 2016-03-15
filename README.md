@@ -1,3 +1,4 @@
+[ ![Download](https://api.bintray.com/packages/chriscm2006/maven/chris-logger/images/download.svg) ](https://bintray.com/chriscm2006/maven/chris-logger/_latestVersion)
 # ChrisLogger
 A simple logging extension to the Android logcat API.  Rather than specifying a log tag for each message tags are calculated by their class, function call, and line numbers.  For release a configurable default tag is added to messages and log levels less than warning (configurable) are ignored completely.
 
