@@ -36,15 +36,23 @@ class Logger {
     //Include the line number as part of the log tag.  Decreases performance.
     private boolean mTagIncludeLineNumber = DEFAULT_INCLUDE_LINE_NUMBER;
 
+
     //Escalate all verbose and debug outputs to info.  This should be the only way
     //a log gets output on the info channel.
     private boolean mImportant = false;
 
-    //Convenience constructor, log everything.
+    /**
+     * Convenience constructor, log everything.
+     */
     public Logger() {
         this(LogLevel.VERBOSE);
     }
 
+    /**
+     * Construct a logger that filters levels below the given level.  Any logs below
+     * this level will be ignored.
+     * @param logLevel The log level.
+     */
     public Logger(LogLevel logLevel) {
         mLogLevel = logLevel;
     }
@@ -54,12 +62,23 @@ class Logger {
     Knowing what function a logging statement originates from is valuable both for debugging
     purpose, and for tracking down errant logging statements that are no longer needed.
      */
+
+    /**
+     * Knowing what function a logging statement originates from is valuable for debugging.
+     * @param includeFunctionName If true, function names will be included in log tags.
+     * @return this, for command chaining.
+     */
     public Logger setTagIncludeFunctionName(boolean includeFunctionName) {
         //Don't log function names in release mode, it's slow.
         mTagIncludeFunctionName = includeFunctionName && CLog.DEBUG_MODE;
         return this;
     }
 
+    /**
+     * For large code bases, knowing what line number a log came from can be handy.
+     * @param includeLineNumber If true, line numbers will be included in log tags.
+     * @return this, for command chaining.
+     */
     public Logger setTagIncludeLineNumber(boolean includeLineNumber) {
         mTagIncludeLineNumber = includeLineNumber && CLog.DEBUG_MODE;
         return this;
@@ -111,11 +130,6 @@ class Logger {
         }
     }
 
-    /*
-    Log level can be manipulated by escalating levels based on certain criteria.
-    Calculate the actual log level of the current message.
-     */
-
     LogLevel calculateActualLogLevel(final LogLevel logLevel) {
         //Sometimes we want to bring focus to a certain logger.
         if (mImportant && CLog.DEBUG_MODE && logLevel.ordinal() < LogLevel.INFO.ordinal()) return LogLevel.INFO;
@@ -123,11 +137,24 @@ class Logger {
         return logLevel;
     }
 
+    /**
+     * Convenience method, calculates "releaseMode" flag based on log level.  Only messages greater than
+     * INFO level will be logged in release.
+     * @param logLevel The level of teh given log message.
+     * @param message The message to be logged.
+     */
     public void println(LogLevel logLevel, final String message) {
         final boolean logInReleaseMode = logLevel.ordinal() >= LogLevel.INFO.ordinal();
         println(logLevel, message, logInReleaseMode);
     }
 
+    /**
+     * Log a message to LogCat.  If log in release mode is set to false, message will not appear unless
+     * the logger is initialized to debug mode.
+     * @param logLevel The level of the given log message.
+     * @param message The message to be logged.
+     * @param logInReleaseMode Whether or not we want to see the mssage in release mode.
+     */
     public void println(LogLevel logLevel, final String message, final boolean logInReleaseMode) {
 
         if (CLog.DEFAULT_LOG_TAG == null) {
@@ -145,36 +172,67 @@ class Logger {
         Log.println(calculateActualLogLevel(logLevel).mAssociatedAndroidLevel, getLogTag(mTagIncludeFunctionName, mTagIncludeLineNumber), message);
     }
 
+    /**
+     * Log to VERBOSE level.  Don't log in release mode.
+     * @param message The message to be logged.
+     */
     public void v(String message) {
-        println(LogLevel.VERBOSE, message, false);
+        println(LogLevel.VERBOSE, message);
     }
 
-    /*
-    If for some reason you believe your verbose logging needs to be seen by clients
-    use this function instead.
+    /**
+     * Log to VERBOSE level.  Forced log in release mode.
+     * @param message The message to be logged.
      */
-    @SuppressWarnings("unused")
     public void v_always(final String message) {
         println(LogLevel.VERBOSE, message, true);
     }
 
+    /**
+     * Log to DEBUG level.  Don't log in release mode.
+     * @param message The message to be logged.
+     */
     public void d(String message) {
-        println(LogLevel.DEBUG, message, false);
+        println(LogLevel.DEBUG, message);
     }
 
+    /**
+     * Log to DEBUG level.  Forced log in release mode.
+     * @param message The message to be logged.
+     */
+    public void d_always(String message) {
+        println(LogLevel.DEBUG, message, true);
+    }
+
+    /**
+     * Log to WARN level.  Don't log in release mode.
+     * @param message The message to be logged.
+     */
     public void w(String message) {
-        println(LogLevel.WARN, message, true);
+        println(LogLevel.WARN, message);
     }
 
+    /**
+     * Log to ERROR level.  Don't log in release mode.
+     * @param message The message to be logged.
+     */
     public void e(String message) {
-        println(LogLevel.ERROR, message, true);
+        println(LogLevel.ERROR, message);
     }
 
-    @SuppressWarnings("unused")
+    /**
+     * Log to ASSERT level.  Don't log in release mode.
+     * @param message The message to be logged.
+     */
     public void wtf(String message) {
-        println(LogLevel.ASSERT, message, true);
+        println(LogLevel.ASSERT, message);
     }
 
+    /**
+     * Modify the log level to temporarily change the level of messages that get filtered out.
+     * Useful for debugging a specific function at a more verbose level.
+     * @param logLevel The level to chane it to.
+     */
     public void setLogLevel(LogLevel logLevel) {
         mLogLevel = logLevel;
     }

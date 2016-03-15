@@ -12,10 +12,16 @@ import static com.chriscm.clog.Utils.*;
 public class CLog {
 
     static String DEFAULT_LOG_TAG = null;
-
     static boolean RELEASE_MODE = true;
     static boolean DEBUG_MODE = false;
 
+    /**
+     * The logger must be initialized before any use.  This allows for customizing behavior
+     * between release and debug modes, without actually changing your build configuration.
+     * Making for easier testing, and forcing release mode if you wish.
+     * @param defaultTag The flag that will be used when in release mode for all loggers.
+     * @param debugMode  True if you're in debug mode.  Just use BuildConfig.DEBUG.
+     */
     public static void initialize(final String defaultTag, final boolean debugMode) {
         RELEASE_MODE = !debugMode;
         DEBUG_MODE = debugMode;
@@ -26,31 +32,61 @@ public class CLog {
 
     static Logger mDefaultLogger = new Logger();
 
+    /**
+     * Convenience method, log to verbose log level.  If escalated, will log to info.
+     * @param message The message to be logged.
+     */
     public static void v(final String message) {
         println(message, Logger.LogLevel.VERBOSE);
     }
 
+    /**
+     * Convenience method, log to debug level.  If escalated, will log to info.
+     * @param message The message to be logged.
+     */
     public static void d(final String message) {
         println(message, Logger.LogLevel.DEBUG);
     }
 
+    /**
+     * Convenience method, log to info level.  Doesn't escalate.
+     * @param message The message to be logged.
+     */
     public static void i(final String message) {
         println(message, Logger.LogLevel.INFO);
     }
 
+    /**
+     * Convenience method, log to warning log level.  Doesn't escalate.
+     * @param message The message to be logged.
+     */
     public static void w(final String message) {
         println(message, Logger.LogLevel.WARN);
     }
 
+    /**
+     * Convenience method, log to error log level.  Doesn't escalate.
+     * @param message The message to be logged.
+     */
     public static void e(final String message) {
         println(message, Logger.LogLevel.ERROR);
     }
 
-
+    /**
+     * Convenience method, log to assert log level.  Doesn't escalate.
+     * @param message The message to be logged.
+     */
     public static void wtf(final String message) {
         println(message, Logger.LogLevel.ASSERT);
     }
 
+    /**
+     * Prints the given message to the given log level.  The input level may not be the
+     * same as the output level.  Messages below the info level can be escalated up to
+     * the info log level.
+     * @param message The message to be logged.
+     * @param logLevel The target log level.
+     */
     public static void println(final String message, final Logger.LogLevel logLevel) {
         try {
             String className = getFirstStackTraceElementNotInPackage().getClassName();
@@ -60,6 +96,12 @@ public class CLog {
         }
     }
 
+    /**
+     * Get the logger for a class object.  Not all Logger instance methods have a
+     * static convenience method.  So this is required for some actions.
+     * @param clazz The class you want the logger for.
+     * @return The logger associated with that class.
+     */
     public static Logger getLogger(Class <?> clazz) {
         if (!mLoggers.containsKey(clazz)) {
             mLoggers.put(clazz, new Logger());
@@ -69,7 +111,7 @@ public class CLog {
     }
 
     /**
-     * Sets the include funtion names tag for all active loggers.
+     * Sets the include function names tag for all active loggers.
      * Also sets the static default value so any future constructed
      * loggers will have the same value for this tag.
      * @param value Set to true to include the function name in log tags
