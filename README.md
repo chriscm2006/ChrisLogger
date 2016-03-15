@@ -1,5 +1,5 @@
 # ChrisLogger
-A simple logging extension to the Android logcat API.  I find my self using the class name for the tag all the time.  This library will cause all log messages to have a tag that is the class name, with options for adding function calls and line numbers.  When building for release, a static default tag is used instead, so as to not effect performance of release builds.
+A simple logging extension to the Android logcat API.  Rather than specifying a log tag for each message tags are calculated by their class, function call, and line numbers.  For release a configurable default tag is added to messages and log levels less than warning (configurable) are ignored completely.
 
 ## Installation
 For now this project is only available for use as a submodule.  Add the submodule to your project under the root directory.  Assuming you use the path "ChrisLogger" you would then do the following:
