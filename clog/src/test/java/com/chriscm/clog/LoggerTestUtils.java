@@ -4,8 +4,6 @@ import junit.framework.Assert;
 
 import org.robolectric.shadows.ShadowLog;
 
-import static org.junit.Assert.assertEquals;
-
 /**
  * Created by chrismcmeeking on 3/8/16.
  *

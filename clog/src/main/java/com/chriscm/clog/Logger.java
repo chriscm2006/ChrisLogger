@@ -4,7 +4,7 @@ import android.util.Log;
 
 import static com.chriscm.clog.Utils.*;
 
-class Logger {
+public class Logger {
 
     public enum LogLevel {
         VERBOSE(Log.VERBOSE),
