@@ -1,20 +1,21 @@
-[ ![Download](https://api.bintray.com/packages/chriscm2006/maven/chris-logger/images/download.svg) ](https://bintray.com/chriscm2006/maven/chris-logger/_latestVersion)
 # ChrisLogger
 A simple logging extension to the Android logcat API.  Rather than specifying a log tag for each message tags are calculated by their class, function call, and line numbers.  For release a configurable default tag is added to messages and log levels less than warning (configurable) are ignored completely.
 
 ## Installation
 For now this project is only available for use as a submodule.  Add the submodule to your project under the root directory.  Assuming you use the path "ChrisLogger" you would then do the following:
 
-In your settings.gradle file
+In your build.gradle file
 
-    include ':ChrisLogger:chrisloggerlibrary', ':app'
-
-In your apps build.gradle file:
-    
+    ...
+    repositories {
+        ...
+        maven {url "http://jitpack.io"}
+        ... 
+    }
     ...
     dependencies {
       ...
-      compile project(':ChrisLogger:chrisloggerlibrary')
+      compile 'com.github.chriscm2006:ChrisLogger:0.1.1'
       ...
     }
     ...
