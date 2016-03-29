@@ -121,7 +121,7 @@ public class Logger {
             }
 
             if (includeLineNumber) {
-                result += "/" + functionCall.getLineNumber();
+                result += "(" + functionCall.getFileName() + ":" + functionCall.getLineNumber() + ")";
             }
 
             return result;

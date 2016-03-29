@@ -59,8 +59,7 @@ public class LoggerTests {
         logger.e("another log");
 
         //The log tag may have to change a lot, but it's worth it to test this.
-        final String tagWithLine = tagWithFunction + "/59";
-        assertTopShadowLogMessage(Logger.LogLevel.ERROR, tagWithLine, "another log");
+        assertTopShadowLogMessage(Logger.LogLevel.ERROR, "LoggerTests.messageTags(LoggerTests.java:59)", "another log");
     }
 
 }
