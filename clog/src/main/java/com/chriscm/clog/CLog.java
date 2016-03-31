@@ -1,5 +1,7 @@
 package com.chriscm.clog;
 
+import android.util.Log;
+
 import java.util.HashMap;
 
 import static com.chriscm.clog.Utils.*;
@@ -26,6 +28,10 @@ public class CLog {
         RELEASE_MODE = !debugMode;
         DEBUG_MODE = debugMode;
         DEFAULT_LOG_TAG = defaultTag;
+
+        String mode = debugMode ? "debug" : "release";
+
+        Log.i(defaultTag, "CLog initialized and in " + mode + " mode.");
     }
 
     static HashMap<Class <?>, Logger> mLoggers = new HashMap<>();
