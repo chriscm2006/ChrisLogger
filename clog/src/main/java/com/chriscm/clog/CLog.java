@@ -32,6 +32,7 @@ public class CLog {
         //Todo: Make Clog logging dependent on package instead.
         if (isInitialized) return;
 
+        isInitialized = true;
 
         RELEASE_MODE = !debugMode;
         DEBUG_MODE = debugMode;
