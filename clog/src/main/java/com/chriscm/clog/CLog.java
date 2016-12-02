@@ -16,6 +16,7 @@ public class CLog {
     static String DEFAULT_LOG_TAG = null;
     static boolean RELEASE_MODE = true;
     static boolean DEBUG_MODE = false;
+    static boolean isInitialized = false;
 
     /**
      * The logger must be initialized before any use.  This allows for customizing behavior
@@ -25,6 +26,14 @@ public class CLog {
      * @param debugMode  True if you're in debug mode.  Just use BuildConfig.DEBUG.
      */
     public static void initialize(final String defaultTag, final boolean debugMode) {
+
+        //If a project is using Chris Logger and a library within is using ChrisLogger,
+        //we don't want the Library to override the initialization.  So we only accept the first one.
+        //Todo: Make Clog logging dependent on package instead.
+        if (isInitialized) return;
+
+        isInitialized = true;
+
         RELEASE_MODE = !debugMode;
         DEBUG_MODE = debugMode;
         DEFAULT_LOG_TAG = defaultTag;
