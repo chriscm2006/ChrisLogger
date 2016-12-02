@@ -7,8 +7,7 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
 import static com.chriscm.clog.LoggerTestUtils.assertTopShadowLogMessage;
-import static org.junit.Assert.assertEquals;
-
+import com.chriscm.clog.CLog.LogLevel;
 /**
  * Created by chrismcmeeking on 3/8/16.
  *
@@ -19,9 +18,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class)
 public class LogDebugModeTests {
-
     private static final boolean DEBUG_MODE = true;
-
 
     @BeforeClass
     public static void configureLogger() {
@@ -34,17 +31,17 @@ public class LogDebugModeTests {
     @Test
     public void messagesRespondToReleaseMode() {
         CLog.v("Hi");
-        assertTopShadowLogMessage(Logger.LogLevel.VERBOSE, TAG, "Hi");
+        assertTopShadowLogMessage(LogLevel.VERBOSE, TAG, "Hi");
 
         //These log levels should only change tags based on release mode
         CLog.w("Aloha");
-        assertTopShadowLogMessage(Logger.LogLevel.WARN, TAG, "Aloha");
+        assertTopShadowLogMessage(LogLevel.WARN, TAG, "Aloha");
 
         CLog.e("Umm...");
-        assertTopShadowLogMessage(Logger.LogLevel.ERROR, TAG, "Umm...");
+        assertTopShadowLogMessage(LogLevel.ERROR, TAG, "Umm...");
 
         CLog.wtf("Good Bye");
-        assertTopShadowLogMessage(Logger.LogLevel.ASSERT, TAG, "Good Bye");
+        assertTopShadowLogMessage(LogLevel.ASSERT, TAG, "Good Bye");
     }
 
     @Test
@@ -52,17 +49,17 @@ public class LogDebugModeTests {
         CLog.getLogger(LogDebugModeTests.class).setIsImportant(true);
 
         CLog.v("A message");
-        assertTopShadowLogMessage(Logger.LogLevel.INFO, TAG, "A message");
+        assertTopShadowLogMessage(LogLevel.INFO, TAG, "A message");
 
         CLog.d("Another message");
-        assertTopShadowLogMessage(Logger.LogLevel.INFO, TAG, "Another message");
+        assertTopShadowLogMessage(LogLevel.INFO, TAG, "Another message");
 
         CLog.getLogger(LogDebugModeTests.class).setIsImportant(false);
 
         CLog.d("Another message");
-        assertTopShadowLogMessage(Logger.LogLevel.DEBUG, TAG, "Another message");
+        assertTopShadowLogMessage(LogLevel.DEBUG, TAG, "Another message");
 
         CLog.v("A message");
-        assertTopShadowLogMessage(Logger.LogLevel.VERBOSE, TAG, "A message");
+        assertTopShadowLogMessage(LogLevel.VERBOSE, TAG, "A message");
     }
 }

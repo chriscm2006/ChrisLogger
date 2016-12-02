@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
+import com.chriscm.clog.CLog.LogLevel;
+import com.chriscm.clog.CLog.Logger;
 
 import static com.chriscm.clog.LoggerTestUtils.*;
 
@@ -29,37 +31,17 @@ public class LoggerTests {
     public void messagesRespondToReleaseMode() {
 
         logger.v("Hi");
-        assertTopShadowLogMessage(Logger.LogLevel.VERBOSE, mTag, "Hi");
+        assertTopShadowLogMessage(LogLevel.VERBOSE, mTag, "Hi");
 
         //These log levels should only change tags based on release mode
         logger.w("Aloha");
-        assertTopShadowLogMessage(Logger.LogLevel.WARN, mTag, "Aloha");
+        assertTopShadowLogMessage(LogLevel.WARN, mTag, "Aloha");
 
         logger.e("Umm...");
-        assertTopShadowLogMessage(Logger.LogLevel.ERROR, mTag, "Umm...");
+        assertTopShadowLogMessage(LogLevel.ERROR, mTag, "Umm...");
 
         logger.wtf("Good Bye");
-        assertTopShadowLogMessage(Logger.LogLevel.ASSERT, mTag, "Good Bye");
+        assertTopShadowLogMessage(LogLevel.ASSERT, mTag, "Good Bye");
 
     }
-
-    @Test
-    public void messageTags() {
-        logger.w("high");
-        assertTopShadowLogMessage(Logger.LogLevel.WARN, mTag, "high");
-
-        logger.setTagIncludeFunctionName(true);
-
-        final String tagWithFunction = mTag + ".messageTags";
-        logger.wtf("nope");
-        assertTopShadowLogMessage(Logger.LogLevel.ASSERT, tagWithFunction, "nope");
-
-        logger.setTagIncludeLineNumber(true);
-
-        logger.e("another log");
-
-        //The log tag may have to change a lot, but it's worth it to test this.
-        assertTopShadowLogMessage(Logger.LogLevel.ERROR, "LoggerTests.messageTags(LoggerTests.java:59)", "another log");
-    }
-
 }

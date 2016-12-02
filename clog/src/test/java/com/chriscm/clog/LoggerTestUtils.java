@@ -16,7 +16,7 @@ public class LoggerTestUtils extends Assert {
         return ShadowLog.getLogs().get(ShadowLog.getLogs().size() - 1);
     }
 
-    public static void assertTopShadowLogMessage(Logger.LogLevel logLevel, final String tag, final String message) {
+    public static void assertTopShadowLogMessage(CLog.LogLevel logLevel, final String tag, final String message) {
 
         ShadowLog.LogItem topLogItem = ShadowLog.getLogs().get(ShadowLog.getLogs().size() - 1);
 
