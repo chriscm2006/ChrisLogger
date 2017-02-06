@@ -268,7 +268,7 @@ public class CLog {
                 final String fileName = functionCall.getFileName();
 
                 if (includeLineNumber) {
-                    return fileName + ":" + functionCall.getLineNumber() + " ";
+                    return fileName + ":" + functionCall.getLineNumber() + "/";
                 } else {
                     final int lastPeriodPosition = fileName.lastIndexOf('.');
 
