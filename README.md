@@ -11,10 +11,10 @@ In your build.gradle file
       compile 'com.github.chriscm2006:ChrisLogger:0.1.1'
     }
 
-Finally, this libary is heavily dependant on whether you are in debug or release mode.  My method of using function calls and class names as log tags is something you obviously would prefer leaving out of released code.  The Android Gradle system for allowing separate config/debug library builds is currently very clumsy.  As such, you must initialize the logger with two critical pieces of information, prior to any logging call.  This is best done in a static initializer block of your code entry class.
+Finally, this library is heavily dependant on whether you are in debug or release mode.  My method of using function calls and class names as log tags is something you obviously would prefer leaving out of released code.  The Android Gradle system for allowing separate config/debug library builds is currently very clumsy.  As such, you must initialize the logger with two critical pieces of information, prior to any logging call.  This is best done in a static initializer block of your code entry class.
 
     class MyActivity extends Activity {
-    
+
       static {
         CLog.initialize("ReleaseLogTag", BuildConfig.DEBUG);
       }
@@ -33,7 +33,7 @@ Or by creating your own logger object.
 
     class MyClass {
       Logger logger = new Logger();
-      
+
       public myFunction() {
         logger.w("A message"); //The same as Log.w("MyClass", "A message");
       }
@@ -46,15 +46,15 @@ Sometimes it is useful to ignore logging from an overly verbose class.  This is 
 
     CLog.getLogger(MyActivity.class).setLogLevel(LogLevel.ASSERT);
 
-Now logs associated with the "MyActivity" class will only log if their of the highest priority.  Juse use:
+Now logs associated with the "MyActivity" class will only log if their of the highest priority.  Just use:
 
     CLog.getLogger(MyActivity.class).setLogLevel(LogLevel.VERBOSE);
-    
+
 to re-enable all logs.
 
 ## Elevate Logging for a Class
 Sometimes you only care about logging for a given class.  Some may note that I have not included convenience methods for the "info" level associated with LogCat.  If we do the following:
 
     CLog.getLogger(MyActivity.class).setIsImportant(true);
-    
+
 any VERBOSE or DEBUG logs coming from MyActivity will log on the info channel.  This allows you to ignore any VERBOSE or DEBUG logs from anywhere else!

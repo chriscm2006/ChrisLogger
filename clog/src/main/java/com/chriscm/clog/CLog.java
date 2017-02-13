@@ -11,12 +11,12 @@ import java.util.List;
  *
  * A static class API that can be used rather than creating your own logger instances.
  */
+@SuppressWarnings("SameParameterValue")
 public class CLog {
 
-    static String DEFAULT_LOG_TAG = null;
-    static boolean RELEASE_MODE = true;
-    static boolean DEBUG_MODE = false;
-    static boolean isInitialized = false;
+    private static String DEFAULT_LOG_TAG = "CLog";
+    private static boolean DEBUG_MODE = false;
+    private static boolean isInitialized = false;
 
     /**
      * The logger must be initialized before any use.  This allows for customizing behavior
@@ -34,7 +34,6 @@ public class CLog {
 
         isInitialized = true;
 
-        RELEASE_MODE = !debugMode;
         DEBUG_MODE = debugMode;
         DEFAULT_LOG_TAG = defaultTag;
 
@@ -43,9 +42,9 @@ public class CLog {
         Log.i(defaultTag, "CLog initialized and in " + mode + " mode.");
     }
 
-    static HashMap<Class <?>, Logger> mLoggers = new HashMap<>();
+    private static final HashMap<Class <?>, Logger> mLoggers = new HashMap<>();
 
-    static Logger mDefaultLogger = new Logger();
+    private static final Logger mDefaultLogger = new Logger();
 
     /**
      * Convenience method, log to verbose log level.  If escalated, will log to info.
@@ -102,15 +101,9 @@ public class CLog {
      * @param message The message to be logged.
      * @param logLevel The target log level.
      */
-    public static void println(final String message, final LogLevel logLevel) {
+    private static void println(final String message, final LogLevel logLevel) {
         try {
             String className = getFirstStackTraceElementNotInPackage().getClassName();
-            Class clazz = Class.forName(className);
-
-            while (clazz.isMemberClass()) {
-                clazz = clazz.getEnclosingClass();
-            }
-
             getLogger(Class.forName(className)).println(logLevel, message);
         } catch (Exception stackTraceElementNotFound) {
            mDefaultLogger.println(logLevel, message);
@@ -118,31 +111,34 @@ public class CLog {
     }
 
     /**
+     * Convenience method to get a logger with a classname string.
+     * @param className The name of the class you want the logger for.
+     * @return The logger associated with that class.
+     */
+    public static Logger getLogger(final String className) {
+        try {
+            return getLogger(Class.forName(className));
+        } catch (ClassNotFoundException e) {
+            return mDefaultLogger;
+        }
+    }
+    /**
      * Get the logger for a class object.  Not all Logger instance methods have a
      * static convenience method.  So this is required for some actions.
      * @param clazz The class you want the logger for.
      * @return The logger associated with that class.
      */
-    public static Logger getLogger(Class <?> clazz) {
+    private static Logger getLogger(Class<?> clazz) {
+
+        while (clazz.isMemberClass()) {
+            clazz = clazz.getEnclosingClass();
+        }
+
         if (!mLoggers.containsKey(clazz)) {
             mLoggers.put(clazz, new Logger());
         }
 
         return mLoggers.get(clazz);
-    }
-
-    /**
-     * Sets the include function names tag for all active loggers.
-     * Also sets the static default value so any future constructed
-     * loggers will have the same value for this tag.
-     * @param value Set to true to include the function name in log tags
-     */
-    public static void setIncludeFunctionNames(final boolean value) {
-        for (Logger logger : mLoggers.values()) {
-            logger.setTagIncludeFunctionName(value);
-        }
-
-        Logger.DEFAULT_INCLUDE_FUNCTION_NAME = value;
     }
 
     /**
@@ -173,28 +169,21 @@ public class CLog {
         }
     }
 
+    @SuppressWarnings({"SameParameterValue", "UnusedReturnValue"})
     public static class Logger {
 
-        static boolean DEFAULT_INCLUDE_FUNCTION_NAME = true;
+        static final boolean DEFAULT_INCLUDE_FUNCTION_NAME = true;
 
         static boolean DEFAULT_INCLUDE_LINE_NUMBER = false;
-
-        //The tag to send do the Android Logger.  You can filter by this string.
-        private static final String DEFAULT_LOG_TAG = BuildConfig.APPLICATION_ID;
 
         //Don't log any messages less than this level.
         private LogLevel mLogLevel;
 
         //Include the function name as part of the log tag.  Decreases performance.
-        private boolean mTagIncludeFunctionName = DEFAULT_INCLUDE_FUNCTION_NAME;
+        private final boolean mTagIncludeFunctionName = DEFAULT_INCLUDE_FUNCTION_NAME;
 
         //Include the line number as part of the log tag.  Decreases performance.
         private boolean mTagIncludeLineNumber = DEFAULT_INCLUDE_LINE_NUMBER;
-
-
-        //Escalate all verbose and debug outputs to info.  This should be the only way
-        //a log gets output on the info channel.
-        private boolean mImportant = false;
 
         /**
          * Convenience constructor, log everything.
@@ -212,23 +201,6 @@ public class CLog {
             mLogLevel = logLevel;
         }
 
-
-    /*
-    Knowing what function a logging statement originates from is valuable both for debugging
-    purpose, and for tracking down errant logging statements that are no longer needed.
-     */
-
-        /**
-         * Knowing what function a logging statement originates from is valuable for debugging.
-         * @param includeFunctionName If true, function names will be included in log tags.
-         * @return this, for command chaining.
-         */
-        public Logger setTagIncludeFunctionName(boolean includeFunctionName) {
-            //Don't log function names in release mode, it's slow.
-            mTagIncludeFunctionName = includeFunctionName && CLog.DEBUG_MODE;
-            return this;
-        }
-
         /**
          * For large code bases, knowing what line number a log came from can be handy.
          * @param includeLineNumber If true, line numbers will be included in log tags.
@@ -239,20 +211,7 @@ public class CLog {
             return this;
         }
 
-        /**
-         * @param important Set whether or not this logger is in elevated status.
-         * @return This command can be chained.
-         *
-         * "Important" logger instances have all of there verbose and debug logs elevated to "info"
-         * so they can be seen easily.
-         */
-        @SuppressWarnings("unused")
-        public Logger setIsImportant(boolean important) {
-            mImportant = important;
-            return this;
-        }
-
-        private String getLogTag(final boolean includeFunction, final boolean includeLineNumber) {
+        private String getLogTag(final boolean includeLineNumber) {
 
             if (CLog.DEBUG_MODE) {
 
@@ -279,13 +238,6 @@ public class CLog {
             }
         }
 
-        LogLevel calculateActualLogLevel(final LogLevel logLevel) {
-            //Sometimes we want to bring focus to a certain logger.
-            if (mImportant && CLog.DEBUG_MODE && logLevel.ordinal() < LogLevel.INFO.ordinal()) return LogLevel.INFO;
-
-            return logLevel;
-        }
-
         /**
          * Convenience method, calculates "releaseMode" flag based on log level.  Only messages greater than
          * INFO level will be logged in release.
@@ -293,32 +245,7 @@ public class CLog {
          * @param message The message to be logged.
          */
         public void println(LogLevel logLevel, final String message) {
-            final boolean logInReleaseMode = logLevel.ordinal() >= LogLevel.INFO.ordinal();
-            println(logLevel, message, logInReleaseMode);
-        }
-
-        /**
-         * Log a message to LogCat.  If log in release mode is set to false, message will not appear unless
-         * the logger is initialized to debug mode.
-         * @param logLevel The level of the given log message.
-         * @param message The message to be logged.
-         * @param logInReleaseMode Whether or not we want to see the mssage in release mode.
-         */
-        public void println(LogLevel logLevel, final String message, final boolean logInReleaseMode) {
-
-            if (CLog.DEFAULT_LOG_TAG == null) {
-                throw new RuntimeException("Must initialize logger library before use.");
-            }
-
-            //Only some messages get logged in release mode.
-            if (CLog.RELEASE_MODE && !logInReleaseMode) return;
-
-            //Some log levels are completely ignored in release mode.
-            if (logLevel.ordinal() < LogLevel.INFO.ordinal() && CLog.RELEASE_MODE) return;
-
-            if (logLevel.ordinal() < mLogLevel.ordinal()) return;
-
-            Log.println(calculateActualLogLevel(logLevel).mAssociatedAndroidLevel, getLogTag(mTagIncludeFunctionName, mTagIncludeLineNumber), message);
+            Log.println(logLevel.mAssociatedAndroidLevel, getLogTag(mTagIncludeLineNumber), message);
         }
 
         /**
@@ -334,7 +261,7 @@ public class CLog {
          * @param message The message to be logged.
          */
         public void v_always(final String message) {
-            println(LogLevel.VERBOSE, message, true);
+            println(LogLevel.VERBOSE, message);
         }
 
         /**
@@ -350,7 +277,7 @@ public class CLog {
          * @param message The message to be logged.
          */
         public void d_always(String message) {
-            println(LogLevel.DEBUG, message, true);
+            println(LogLevel.DEBUG, message);
         }
 
         /**
@@ -387,7 +314,7 @@ public class CLog {
         }
     }
 
-    private static List<Class<?>> CLASSES_IN_PACKAGE = Arrays.asList(CLog.class, Logger.class);
+    private static final List<Class<?>> CLASSES_IN_PACKAGE = Arrays.asList(CLog.class, Logger.class);
 
     private static boolean isClassInPackage(final Class <?> argClazz) {
 
@@ -407,9 +334,8 @@ public class CLog {
     Find the first StackTraceElement that is not associated with the Logger class.
     This should be the element that initiated any logging action.
      */
-    public static StackTraceElement getFirstStackTraceElementNotInPackage() throws StackTraceElementNotFound {
+    private static StackTraceElement getFirstStackTraceElementNotInPackage() throws StackTraceElementNotFound {
 
-        final String className = Logger.class.getName();
         boolean elementInClassFound = false;
 
         //We want to search through all elements, until we find one associated with this class

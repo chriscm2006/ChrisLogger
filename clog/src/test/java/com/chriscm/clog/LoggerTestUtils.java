@@ -9,7 +9,7 @@ import org.robolectric.shadows.ShadowLog;
  *
  * Utilities used for testing.
  */
-public class LoggerTestUtils extends Assert {
+class LoggerTestUtils extends Assert {
 
 
     private static ShadowLog.LogItem getTopLogItem() {

@@ -17,14 +17,13 @@ import static com.chriscm.clog.LoggerTestUtils.*;
 @Config(constants = BuildConfig.class)
 public class LoggerTests {
 
-    Logger logger = new Logger();
+    private final Logger logger = new Logger();
 
-    final static String mTag = BuildConfig.DEBUG ? LoggerTests.class.getSimpleName() : BuildConfig.APPLICATION_ID;
+    private final static String mTag = BuildConfig.DEBUG ? LoggerTests.class.getSimpleName() : BuildConfig.APPLICATION_ID;
 
     @BeforeClass
     public static void configureLogger() {
         CLog.initialize("DefaultTag", true);
-        CLog.setIncludeFunctionNames(false);
     }
 
     @Test

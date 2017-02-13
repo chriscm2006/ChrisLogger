@@ -23,10 +23,9 @@ public class LogDebugModeTests {
     @BeforeClass
     public static void configureLogger() {
         CLog.initialize("DefaultTag", DEBUG_MODE);
-        CLog.setIncludeFunctionNames(false);
     }
 
-    final static String TAG = BuildConfig.DEBUG ? LogDebugModeTests.class.getSimpleName() : BuildConfig.APPLICATION_ID;
+    private final static String TAG = BuildConfig.DEBUG ? LogDebugModeTests.class.getSimpleName() : BuildConfig.APPLICATION_ID;
 
     @Test
     public void messagesRespondToReleaseMode() {
@@ -46,15 +45,12 @@ public class LogDebugModeTests {
 
     @Test
     public void messagesEscalateToInfo() {
-        CLog.getLogger(LogDebugModeTests.class).setIsImportant(true);
 
         CLog.v("A message");
         assertTopShadowLogMessage(LogLevel.INFO, TAG, "A message");
 
         CLog.d("Another message");
         assertTopShadowLogMessage(LogLevel.INFO, TAG, "Another message");
-
-        CLog.getLogger(LogDebugModeTests.class).setIsImportant(false);
 
         CLog.d("Another message");
         assertTopShadowLogMessage(LogLevel.DEBUG, TAG, "Another message");
