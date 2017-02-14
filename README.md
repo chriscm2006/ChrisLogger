@@ -1,5 +1,5 @@
 # ChrisLogger
-A simple logging extension to the Android logcat API.  Rather than specifying a log tag for each message tags are calculated by their class, function call, and line numbers.  This allows you to click on the file and go directly to the line that created the log message in Android Studio.  This does slow things down a bit, so if you need to test performance, ensure you set the DEBUG flag to false upon initialization!  For release a configurable default tag is added to messages and log levels less than warning (configurable) are ignored completely.
+A simple logging extension to the Android logcat API.  Rather than specifying a log tag for each message tags are calculated by their class, function call, and line numbers.  This allows you to click on the file and go directly to the line that created the log message in Android Studio.  This does slow things down a bit, so if you need to test performance, ensure you set the DEBUG flag to false upon initialization!
 
 ## Installation
 In your build.gradle file
