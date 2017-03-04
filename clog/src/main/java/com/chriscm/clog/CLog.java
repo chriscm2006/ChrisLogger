@@ -261,7 +261,9 @@ public class CLog {
          * @param message The message to be logged.
          */
         public void println(LogLevel logLevel, final String message) {
-            Log.println(logLevel.mAssociatedAndroidLevel, getLogTag(mTagIncludeLineNumber), message);
+            for( String line : message.split("\n") ) {
+                Log.println(logLevel.mAssociatedAndroidLevel, getLogTag(mTagIncludeLineNumber), line);
+            }
         }
 
         /**
