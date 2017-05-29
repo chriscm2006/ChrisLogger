@@ -1,13 +1,13 @@
 package com.chriscm.clog;
 
-import org.junit.BeforeClass;
+import org.junit.Assert;
 import org.junit.Test;
+import org.junit.internal.requests.ClassRequest;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLog;
 
-import static com.chriscm.clog.LoggerTestUtils.assertTopShadowLogMessage;
-import com.chriscm.clog.CLog.LogLevel;
 /**
  * Created by chrismcmeeking on 3/8/16.
  *
@@ -15,47 +15,43 @@ import com.chriscm.clog.CLog.LogLevel;
  * and supplies a lot of information to the user.  Include class and function calls in log
  * tags.
  */
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class)
+@RunWith(RobolectricTestRunner.class)
+@Config(constants = BuildConfig.class, sdk=18)
 public class LogDebugModeTests {
     private static final boolean DEBUG_MODE = true;
+    private static final boolean RELEASE_MODE = !DEBUG_MODE;
 
-    @BeforeClass
-    public static void configureLogger() {
-        CLog.initialize("DefaultTag", DEBUG_MODE);
+    private final static String TAG = "MyDefaultTag";
+
+    @Test public void logTagDebugMode() {
+        CLog.initialize(TAG, DEBUG_MODE);
+
+        CLog.i("");
+
+        Assert.assertTrue(LoggerTestUtils.getTopLogItem().tag.contains(LogDebugModeTests.class.getSimpleName()));
     }
 
-    private final static String TAG = BuildConfig.DEBUG ? LogDebugModeTests.class.getSimpleName() : BuildConfig.APPLICATION_ID;
+    @Test public void logTagReleaseMode() {
+        CLog.initialize(TAG, RELEASE_MODE);
 
-    @Test
-    public void messagesRespondToReleaseMode() {
-        CLog.v("Hi");
-        assertTopShadowLogMessage(LogLevel.VERBOSE, TAG, "Hi");
+        CLog.i("");
 
-        //These log levels should only change tags based on release mode
-        CLog.w("Aloha");
-        assertTopShadowLogMessage(LogLevel.WARN, TAG, "Aloha");
-
-        CLog.e("Umm...");
-        assertTopShadowLogMessage(LogLevel.ERROR, TAG, "Umm...");
-
-        CLog.wtf("Good Bye");
-        assertTopShadowLogMessage(LogLevel.ASSERT, TAG, "Good Bye");
+        Assert.assertEquals(TAG, LoggerTestUtils.getTopLogItem().tag);
     }
 
-    @Test
-    public void messagesEscalateToInfo() {
+    @Test public void logsHiddenInReleaseMode() {
+        CLog.initialize(TAG, RELEASE_MODE);
 
-        CLog.v("A message");
-        assertTopShadowLogMessage(LogLevel.INFO, TAG, "A message");
+        final int initialSize = ShadowLog.getLogs().size();
 
-        CLog.d("Another message");
-        assertTopShadowLogMessage(LogLevel.INFO, TAG, "Another message");
+        CLog.v("");
+        Assert.assertEquals(initialSize, ShadowLog.getLogs().size());
 
-        CLog.d("Another message");
-        assertTopShadowLogMessage(LogLevel.DEBUG, TAG, "Another message");
+        CLog.d("");
+        Assert.assertEquals(initialSize, ShadowLog.getLogs().size());
 
-        CLog.v("A message");
-        assertTopShadowLogMessage(LogLevel.VERBOSE, TAG, "A message");
+        CLog.i("");
+        Assert.assertEquals(initialSize + 1, ShadowLog.getLogs().size());
     }
+
 }
