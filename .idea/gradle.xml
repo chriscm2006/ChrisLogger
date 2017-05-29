@@ -10,7 +10,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/clog" />
+            <option value="$PROJECT_DIR$/CLog" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

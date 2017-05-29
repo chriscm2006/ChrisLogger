@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/clog/CLog.iml" filepath="$PROJECT_DIR$/clog/CLog.iml" />
       <module fileurl="file://$PROJECT_DIR$/ChrisLogger.iml" filepath="$PROJECT_DIR$/ChrisLogger.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CLog/CLog.iml" filepath="$PROJECT_DIR$/CLog/CLog.iml" />
     </modules>
   </component>
 </project>
