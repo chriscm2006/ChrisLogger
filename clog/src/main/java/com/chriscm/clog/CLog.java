@@ -102,7 +102,7 @@ public class CLog {
             return DEFAULT_LOG_TAG;
         }
 
-        return functionCall.getFileName() + ":" + functionCall.getLineNumber() + "/";
+        return "(" + functionCall.getFileName() + ":" + functionCall.getLineNumber() + ")/";
     }
 
     public static class StackTraceElementNotFound extends Exception {
